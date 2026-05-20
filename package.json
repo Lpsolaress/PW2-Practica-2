@@ -1,0 +1,12 @@
+{
+  "name": "pw-proyecto-2",
+  "private": true,
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  },
+  "scripts": {
+    "build": "npm --prefix frontend run build",
+    "dev": "concurrently -k -n backend,frontend \"cd Back && venv/bin/python -m uvicorn app.main:app --reload --port 3000\" \"npm --prefix frontend run dev\"",
+    "start": "concurrently -k -n backend,frontend \"cd Back && venv/bin/python -m uvicorn app.main:app --port 3000\" \"npm --prefix frontend run dev\""
+  }
+}

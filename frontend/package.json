@@ -1,0 +1,20 @@
+{
+  "name": "svelte-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "postinstall": "node -e \"const fs=require('fs');const p='node_modules/rolldown/package.json';if(fs.existsSync(p)){const pkg=JSON.parse(fs.readFileSync(p,'utf8'));const exp=pkg.exports&&pkg.exports['./experimental/runtime-types'];if(exp&&typeof exp==='object'&&exp.types&&!exp.default){exp.default=pkg.exports['./experimental']||'./dist/experimental-index.mjs';fs.writeFileSync(p,JSON.stringify(pkg,null,2)+'\\n');}}const p2='node_modules/aria-query/lib/rolesMap.js';if(fs.existsSync(p2)){const from='var roles = [].concat(_ariaAbstractRoles.default, _ariaLiteralRoles.default, _ariaDpubRoles.default, _ariaGraphicsRoles.default);';const to='var roles = [].concat(_ariaAbstractRoles.default, _ariaLiteralRoles.default, _ariaDpubRoles.default, _ariaGraphicsRoles.default).filter(Boolean);';const src=fs.readFileSync(p2,'utf8');if(src.includes(from)&&!src.includes(to)){fs.writeFileSync(p2,src.replace(from,to));}}const p3='node_modules/axobject-query/lib/AXObjectElementMap.js';if(fs.existsSync(p3)){const src=fs.readFileSync(p3,'utf8');if(!src.includes('AXObjectsEntries')){const from='var AXObjectElements = []\\nvar _iterator = _createForOfIteratorHelper(_AXObjectsMap.default.entries()),';const to='var AXObjectElements = []\\nvar AXObjectsEntries = typeof _AXObjectsMap.default.entries === \\'function\\' ? _AXObjectsMap.default.entries() : _AXObjectsMap.default;\\nvar _iterator = _createForOfIteratorHelper(AXObjectsEntries),';if(src.includes(from)){fs.writeFileSync(p3,src.replace(from,to));}}}const p4='node_modules/picomatch/lib/picomatch.js';if(fs.existsSync(p4)){const src=fs.readFileSync(p4,'utf8');const from='if (options.fastpaths !== false && (input[0] === \\'\\.\\' || input[0] === \\'*\\')) {';const to='if (options.fastpaths !== false && typeof parse.fastpaths === \\'function\\' && (input[0] === \\'\\.\\' || input[0] === \\'*\\')) {';if(src.includes(from)&&!src.includes(to)){fs.writeFileSync(p4,src.replace(from,to));}}\""
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.1.1",
+    "svelte": "^5.53.7",
+    "vite": "^6.4.1"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.3"
+  }
+}
