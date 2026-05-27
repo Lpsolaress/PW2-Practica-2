@@ -23,9 +23,13 @@ Thumbs.db
 # IDEs
 .vscode/
 .idea/
+.trae/
 *.swp
 *.swo
 *~
+
+# Otros
+Pasos.md
 
 # Build
 dist/

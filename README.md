@@ -1,134 +1,93 @@
-# Proyecto 2 - Gestión de Productos y Carrito
+# Practica 2 - Gestion de Productos y Carrito (Python FastAPI)
 
-Este proyecto consiste en una aplicación web con un **Frontend** desarrollado en **Svelte 5** (con Vite) y un **Backend** construido con **Express.js** y **MongoDB**.
+Este proyecto consiste en una aplicacion web con un frontend desarrollado en Svelte 5 y un backend migrado a Python utilizando el framework FastAPI. El sistema permite la gestion de usuarios, autenticacion mediante JWT, administracion de productos y procesamiento de ordenes de compra.
 
 ---
 
-## 🚀 Instalación y Ejecución
+## Instalacion y Ejecucion
 
 ### Requisitos Previos
-*   [Node.js](https://nodejs.org/) (versión LTS recomendada)
-*   [MongoDB](https://www.mongodb.com/) (Local o MongoDB Atlas)
+* Python 3.11 o superior
+* Node.js (version LTS recomendada)
+* Entorno virtual de Python (recomendado)
 
-### Pasos para la Instalación
+### Pasos para la Instalacion
 
-1.  **Clonar el repositorio**:
-    ```bash
-    git clone https://github.com/Lpsolaress/PW2-Practica-1.git
-    cd "PW-Proyecto 2"
-    ```
+1. Configurar el Backend:
+   Acceder a la carpeta del servidor y configurar el entorno:
+   ```bash
+   cd Back
+   python3 -m venv venv
+   source venv/bin/activate  # En Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
 
-2.  **Configurar Variables de Entorno (Backend)**:
-    Crea un archivo `.env` dentro de la carpeta `backend/` con las siguientes configuraciones:
-    ```dotenv
-    PORT=3000
-    MONGO_URI=mongodb://127.0.0.1:27017/productos
-    JWT_SECRET=tu_secreto_seguro
-    ```
+2. Configurar Variables de Entorno (Backend):
+   Crear un archivo .env dentro de la carpeta Back/ con la siguiente configuracion basica:
+   ```dotenv
+   SECRET_KEY=una_clave_secreta_muy_larga_y_segura
+   ALGORITHM=HS256
+   ACCESS_TOKEN_EXPIRE_MINUTES=10080
+   DATABASE_URL=sqlite:///./app.db
+   ```
 
-3.  **Instalar dependencias globales/coordinador**:
-    En la raíz del proyecto, ejecuta:
-    ```bash
-    npm install
-    ```
-    *(Instalará `concurrently` para ejecutar Frontend y Backend a la vez).*
+3. Configurar el Frontend:
+   Desde la raiz del proyecto, instalar las dependencias de la interfaz:
+   ```bash
+   cd frontend
+   npm install
+   ```
 
-4.  **Instalar dependencias del Backend**:
-    ```bash
-    cd backend && npm install
-    ```
+### Ejecucion de la Aplicacion
 
-5.  **Instalar dependencias del Frontend**:
-    ```bash
-    cd ../frontend && npm install
-    ```
+Para ejecutar el sistema completo, se deben iniciar ambos servicios:
 
-### ▶️ Ejecución de la Aplicación
+1. Iniciar el Backend (desde la carpeta Back):
+   ```bash
+   uvicorn app.main:app --reload --port 3000
+   ```
+   El servidor estara disponible en http://localhost:3000 y la documentacion interactiva en http://localhost:3000/docs
 
-Para ejecutar ambos servidores (Backend y Frontend) simultáneamente con un solo comando:
-
-1.  Asegúrate de estar en la **raíz del proyecto**.
-2.  Ejecuta:
-    ```bash
-    npm run dev
-    ```
-    *   **Backend**: Correrá en el puerto configurado (usualmente 3000 o según `.env`).
-    *   **Frontend**: Correrá en un entorno Vite (ej: `http://localhost:5173`).
-
----
-
-## 🧩 Svelte 5 Runes
-
-La aplicación utiliza las nuevas **Runes** de **Svelte 5** para la reactividad y gestión de datos. A continuación se detallan los runes empleados y sus casos de uso principales:
-
-*   **`$state`**: define el estado reactivo.
-    *   `frontend/src/state/app.svelte.js` (Estado global `app`).
-    *   `SupportHubPage.svelte` y `ChatWidget.svelte` (Mensajes, conexiones socket).
-    *   `ProductsPage.svelte` (Filtros, modales, estado de carga).
-    *   `CartPage.svelte` (Promociones, procesos de pago).
-
-*   **`$derived` / `$derived.by`**: reactividad basada en otros estados.
-    *   `CartPage.svelte`: Cálculo de totales (`subtotal`, `tax`, `total`), conteo de ítems (`cartCount`), y sugerencias de productos.
-    *   `ProductsPage.svelte`: Lista filtrada de productos (`productosFiltrados`) y límite de visualización.
-
-*   **`$effect`**: manejo de efectos secundarios (side-effects).
-    *   `App.svelte`: Verificación de tokens y carga inicial.
-    *   `CartPage.svelte` y `ProductsPage.svelte`: Bloques para cargar datos desde la API cuando cambian ciertos parámetros o al montar el componente.
-
-*   **`$props`**: paso de propiedades entre componentes.
-    *   `NavBar.svelte`: Recibe la ruta actual (`currentPath`).
-    *   `ProductModal.svelte`: Recibe el producto a visualizar/editar y la función de cierre (`onClose`).
+2. Iniciar el Frontend (desde la carpeta frontend):
+   ```bash
+   npm run dev
+   ```
+   La aplicacion estara disponible en la direccion indicada por Vite (usualmente http://localhost:5173).
 
 ---
 
-## 🔌 Backend Endpoints y Roles
+## Arquitectura del Sistema
 
-El Backend se organiza por módulos con rutas diferenciadas. Requieren autenticación mediante **JWT** (Header: `Authorization: Bearer <token>`).
+El backend sigue una arquitectura limpia dividida en capas para facilitar el mantenimiento y la escalabilidad:
 
-### 🔑 Autenticación (`/auth`)
-| Método | Endpoint | Rol Necesario | Descripción |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/auth/registro` | **Público** | Registro de nuevos usuarios |
-| `POST` | `/auth/login` | **Público** | Inicio de sesión |
-| `GET` | `/auth/perfil` | Autenticado | Obtener datos del perfil actual |
-| `PUT` | `/auth/perfil` | Autenticado | Actualizar perfil/imagen |
-| `POST` | `/auth/direcciones` | Autenticado | Añadir dirección de envío |
-
-### 📦 Productos (`/productos`)
-| Método | Endpoint | Rol Necesario | Descripción |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/productos` | **Público** | Listar todos los productos |
-| `GET` | `/productos/:id`| **Público** | Ver detalle de un producto |
-| `POST` | `/productos` | `administrador` | Crear un nuevo producto |
-| `PUT` | `/productos/:id`| `administrador` | Editar un producto existente |
-| `DELETE`| `/productos/:id`| `administrador` | Eliminar un producto |
-
-### 🛒 Carrito o Cesta (`/carrito`)
-*(Requieren Autenticación general)*
-*   `GET /`: Obtener el carrito del usuario.
-*   `POST /add`: Añadir producto.
-*   `PATCH /item/:productId`: Cambiar cantidad.
-*   `DELETE /item/:productId`: Quitar ítem.
-
-### 🧾 Órdenes/Pedidos (`/ordenes`)
-| Método | Endpoint | Rol Necesario | Descripción |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/ordenes` | `administrador` | Listar todas las órdenes del sistema |
-| `GET` | `/ordenes/mis-ordenes`| Autenticado | Listar historial propio de órdenes |
-| `POST` | `/ordenes` | Autenticado | Checkout (Crear orden del carrito) |
-| `PATCH`| `/ordenes/:id/status`| `administrador` | Actualizar estado (Pendiente, etc.) |
-
-### 👥 Usuarios (`/usuarios`)
-*   **Rol Requerido:** `administrador` para todos los endpoints.
-*   `GET /`, `POST /`, `PUT /:id`, `DELETE /:id` para gestión administrativa de cuentas de usuario.
+* Routers: Gestion de endpoints HTTP y validacion de entrada mediante Pydantic.
+* Services: Logica de negocio pura, independiente del framework web.
+* Repositories: Unica capa con acceso directo a la base de datos (SQLAlchemy).
+* Models: Definicion de tablas y esquemas de base de datos.
+* Schemas: Modelos de Pydantic para la serializacion y validacion de datos.
 
 ---
 
-## 📌 Notas Adicionales
-- Para consultar o previsualizar la base de datos de manera visual, se recomienda utilizar **MongoDB Compass**.
-- El puerto `3000` debe estar libre para que el Chat y la API interactúen sin errores de CORS bloqueados.
+## Funcionalidades Principales
+
+### Autenticacion y Usuarios
+* Registro e inicio de sesion con hashing de contraseñas (bcrypt).
+* Gestion de perfiles y autorizacion basada en roles (usuario y administrador).
+* Proteccion de rutas mediante tokens JWT.
+
+### Gestion de Productos
+* CRUD completo de productos para administradores.
+* Subida y almacenamiento de imagenes en el servidor.
+* Listado y filtrado de productos para todos los usuarios.
+
+### Carrito y Ordenes
+* Gestion de persistencia del carrito de compras.
+* Procesamiento de pedidos y almacenamiento en base de datos SQLite.
+* Notificaciones en tiempo real mediante WebSockets (Socket.io).
 
 ---
 
-## 🔗 Repositorio
-- [PW2-Practica-1](https://github.com/Lpsolaress/PW2-Practica-1.git)
+## Notas de Desarrollo
+* La base de datos se inicializa automaticamente al arrancar el servidor backend por primera vez.
+* Se ha incluido un manejador global de errores para asegurar respuestas unificadas en formato JSON.
+* La documentacion del uso de IA y analisis critico se encuentra en el archivo uso_ia.md.
